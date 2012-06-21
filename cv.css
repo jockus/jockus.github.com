@@ -1,0 +1,38 @@
+	p.bold {
+	   font-weight: bold;
+	}
+	li.cv  {
+	    margin-bottom: 5px;
+	}
+
+        h1.cv {
+            margin: 0px;
+            font-family: verdana, sans-serif;
+            font-size: 12pt;
+            color: #000000;
+        }
+
+        h2.cv {
+            margin: 0px;
+            font-family:  verdana, sans-serif;
+            font-size: 10pt;
+            color: #FF9900;
+            margin-bottom: 10px;
+        }
+
+        h3.cv {
+            margin: 0px;
+            font-family: garamond, verdana, sans-serif;
+            font-size: 14pt;
+            color: #000000;
+	    margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h4.cv {
+            font-family: tahoma, sans-serif;
+            font-size: 8pt;
+            color: #000000;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
