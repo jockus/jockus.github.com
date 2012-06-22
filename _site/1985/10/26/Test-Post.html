@@ -6,7 +6,7 @@
     <!-- <meta name="author" content="Joakim Hentula" /> -->
     <link rel="stylesheet" type="text/css" href="/menu.css" />
     <link rel="stylesheet" type="text/css" href="/cv.css" />
-    <title>{{ page.title }}</title>
+    <title>test</title>
     <!-- Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis:400,200,600' rel='stylesheet' type='text/css' />
   </head>
@@ -26,9 +26,25 @@
 
 <div id="content">
     
-    {{ content }}
+      <div class="header">
+  <div class="meta">
+ 
+   <div class="author-profile">
+   	<h1></h1> <br/>
+    <p> Post header image </p>
+   </div>
 
-    {% if page.comments %}
+  </div> <!-- #meta -->
+  </div> <!-- #header -->
+
+	<p>Liquid error: No such file or directory - pygmentize</p>
+
+<p>This is a test post writen in markdown. To learn more about markdown check out the <a href="http://daringfireball.net/projects/markdown/">documentation</a> on <a href="http://daringfireball.net/">Daring Fireball</a>.</p>
+
+
+
+
+    
        <div id="disqus_thread"></div>
         <script type="text/javascript">
             var disqus_shortname = 'joakimhentula';
@@ -41,7 +57,7 @@
         </script>
         <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
         <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    {% endif %}
+    
 
 
       <script type="text/javascript">

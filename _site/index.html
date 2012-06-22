@@ -6,7 +6,7 @@
     <!-- <meta name="author" content="Joakim Hentula" /> -->
     <link rel="stylesheet" type="text/css" href="/menu.css" />
     <link rel="stylesheet" type="text/css" href="/cv.css" />
-    <title>{{ page.title }}</title>
+    <title>hentula.com</title>
     <!-- Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis:400,200,600' rel='stylesheet' type='text/css' />
   </head>
@@ -26,22 +26,22 @@
 
 <div id="content">
     
-    {{ content }}
+    <H1>Welcome!</H1>
+<p>Testing testing.</p>
+<a href="google.com">Linkage test test</a>
 
-    {% if page.comments %}
-       <div id="disqus_thread"></div>
-        <script type="text/javascript">
-            var disqus_shortname = 'joakimhentula';
+<div class="related">
+<ul>
+  
+  <li>
+<span>October 26, 1985</span> <a href="/1985/10/26/Test-Post.html#disqus_thread">Test Post</a>
+  </li>
+  
+</ul>
+</div>
 
-            (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-            })();
-        </script>
-        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    {% endif %}
+
+    
 
 
       <script type="text/javascript">
