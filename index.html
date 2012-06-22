@@ -5,27 +5,23 @@ comments: false
 ---
 
 
+<H1>Welcome!</H1>
+<p>Testing testing.</p>
+<a href="google.com">Linkage test test</a>
 
-<div class="content">
+{% highlight c++ %}
+if( m_audioManager->getAudioEngine() )
+{
+m_switchId = m_audioManager->getAudioEngine()->getIdFromString( m_switchName );
+}
+{% endhiglight %}
 
-	<H1>Welcome!</H1>
-	<p>Testing testing.</p>
-	<a href="google.com">Linkage test test</a>
-
-	{% highlight c[[]] %}
-	if( m_audioManager->getAudioEngine() )
-	{
-	m_switchId = m_audioManager->getAudioEngine()->getIdFromString( m_switchName );
-	}
-	{% endhiglight %}
-  
-  <div class="related">
-    <ul>
-      {% for post in site.posts %}
-      <li>
-	<span>{{ post.date | date: "%B %e, %Y" }}</span> <a href="{{ post.url }}#disqus_thread">{{ post.title }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
+<div class="related">
+<ul>
+  {% for post in site.posts %}
+  <li>
+<span>{{ post.date | date: "%B %e, %Y" }}</span> <a href="{{ post.url }}#disqus_thread">{{ post.title }}</a>
+  </li>
+  {% endfor %}
+</ul>
 </div>
