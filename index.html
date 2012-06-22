@@ -5,18 +5,20 @@ comments: false
 ---
 
 
-<H1>Welcome!</H1>
-<p>Testing testing.</p>
-<a href="google.com">Linkage test test</a>
-
-{% highlight c[[]] %}
-if( m_audioManager->getAudioEngine() )
-{
-    m_switchId = m_audioManager->getAudioEngine()->getIdFromString( m_switchName );
-}
-{% endhiglight %}
 
 <div class="content">
+
+	<H1>Welcome!</H1>
+	<p>Testing testing.</p>
+	<a href="google.com">Linkage test test</a>
+
+	{% highlight c[[]] %}
+	if( m_audioManager->getAudioEngine() )
+	{
+	m_switchId = m_audioManager->getAudioEngine()->getIdFromString( m_switchName );
+	}
+	{% endhiglight %}
+  
   <div class="related">
     <ul>
       {% for post in site.posts %}
@@ -27,14 +29,3 @@ if( m_audioManager->getAudioEngine() )
     </ul>
   </div>
 </div>
-
-<script type="text/javascript">
-var disqus_shortname = 'joakimhentula'; 
-
-(function () {
-    var s = document.createElement('script'); s.async = true;
-    s.type = 'text/javascript';
-    s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
-    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-}());
-</script>
