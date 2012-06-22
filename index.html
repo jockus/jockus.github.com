@@ -37,14 +37,15 @@ title: hentula.com
 
 
   <div id="content">
+  
   <div class="header">
 	<div class="meta">
  
- <div class="author-profile">
- 	<p> Post header image </p>
- </div>
+	 <div class="author-profile">
+	 	<p> Post header image </p>
+	 </div>
 
-</div> <!-- #meta -->
+	</div> <!-- #meta -->
 </div> <!-- #header -->
 
     
@@ -59,7 +60,7 @@ title: hentula.com
 <p>Testing testing.</p>
 <a href="google.com">Linkage test test</a>
 
-{% highlight cpp %}
+{% highlight c++ %}
 if( m_audioManager->getAudioEngine() )
 {
     m_switchId = m_audioManager->getAudioEngine()->getIdFromString( m_switchName );
@@ -71,7 +72,7 @@ if( m_audioManager->getAudioEngine() )
     <ul>
       {% for post in site.posts %}
       <li>
-	<span>{{ post.date | date: "%B %e, %Y" }}</span> <a href="{{ post.url }}">{{ post.title }}</a>
+	<span>{{ post.date | date: "%B %e, %Y" }}</span> <a href="{{ post.url }}#disqus_thread">{{ post.title }}</a>
       </li>
       {% endfor %}
     </ul>
@@ -80,9 +81,9 @@ if( m_audioManager->getAudioEngine() )
 
 
 
-</div> <!-- #header -->
-</div> <!-- #header -->
-</div> <!-- #header -->
+</div> <!-- #box visible -->
+</div> <!-- # post-full -->
+</div> <!-- #article -->
 
 
 </div> <!-- #content -->
