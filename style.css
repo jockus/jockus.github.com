@@ -352,7 +352,8 @@ h6 {
   color: #000000;
 }
 a, a:visited {
-  color: #47afd5;
+  /* color: #47afd5; */
+  color: #d38533;
 }
 div.article-text b, div.article-text strong, div.article-text th {
   font-weight: normal;
