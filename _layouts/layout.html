@@ -6,8 +6,10 @@
     <!-- <meta name="author" content="Joakim Hentula" /> -->
     <link rel="stylesheet" type="text/css" href="/menu.css" />
     <link rel="stylesheet" type="text/css" href="/cv.css" />
-    <script type='text/javascript' src='/modernizr.custom.17809.js'>
+    <script type='text/javascript' src='/modernizr.js'>
     </script>
+    <script type="text/javascript" src="/jquery.js">
+    </script> 
 
     <title>{{ page.title }}</title>
     <!-- Fonts -->
@@ -60,4 +62,18 @@
   </div> <!-- #content -->
   
   </body>
+
+<!-- Change body class based on touch screen device -->
+<script type="text/javascript">
+  $(document).ready(function() {
+     var body = document.body;
+    if (modernizr.touch ) {
+        body.className = " touch";
+    } else {
+        body.className = " mouse";
+    }
+    
+  });
+</script>
+
 </html>
