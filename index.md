@@ -8,7 +8,7 @@ comments: false
   {% for post in site.posts %}
   <div class=" post-excerpt">
 	<h2 class="title">
-		<span>{{ post.date | date: "%B %e, %Y" }}</span> <a href="{{ post.url }}">{{ post.title }}</a> 
+		<a href="{{ post.url }}">{{ post.title }}</a> 
 	</h2>
 
 	<div class="article-text">
