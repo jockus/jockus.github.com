@@ -564,13 +564,13 @@ div.post-full ul.button-list {
   -o-transition: 0.1s ease-in;
   transition: 0.1s ease-in;
   text-shadow: 1px 1px #f7f7f7;
-  background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led-off.png) no-repeat right center;
+  /* background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led-off.png) no-repeat right center; */
   padding-right: 20px;
 }
 .nav a:hover {
   color: #000;
   text-decoration: none;
-  background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led.png) no-repeat right center;
+  /* background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led.png) no-repeat right center; */
   -webkit-transition: 0.1s ease-in;
   -moz-transition: 0.1s ease-in;
   -o-transition: 0.1s ease-in;
@@ -578,7 +578,7 @@ div.post-full ul.button-list {
 }
 .nav .current a {
   color: #5a5a5a;
-  background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led.png) no-repeat right center;
+  /* background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led.png) no-repeat right center; */
   padding-right: 20px;
 }
 div.page-authors div.author {
@@ -613,7 +613,7 @@ body.mouse div#sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  width: 400px;
+  width: 300px;
   min-width: 250px;
   height: 100%;
 }
@@ -718,8 +718,8 @@ body.touch .nav li a {
     position: fixed;
     top: 0;
     left: 0;
-    width: 250px;
-    min-width: 250px;
+    width: 150px;
+    min-width: 150px;
     height: 100%;
   }
   body.mouse * html body {
