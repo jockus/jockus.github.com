@@ -14,6 +14,7 @@ comments: false
 	<div class="article-text">
 		{{ post.content | replace:'more start -->','' | replace:'<!-- more end','' }}
 	</div>
+
 	<div class="meta">
 		<a href="{{ post.url }}#disqus_thread"></a>
 	</div>
