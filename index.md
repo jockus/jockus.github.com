@@ -12,7 +12,12 @@ comments: false
 	</h2>
 
 	<div class="article-text">
-		{{ post.content | replace:'more start -->','' | replace:'<!-- more end','' }}
+		<table>
+			<td>
+		<img src="{{ post.image }}" width="200" height="200" align="left"></img>
+		{{ post.description }}
+	</td>
+	</table>
 	</div>
 
 	<div class="meta">
