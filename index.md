@@ -14,10 +14,10 @@ comments: false
 	<div class="article-text">
 		<table>
 			<td>
-		<img src="{{ post.image }}" width="200" height="200" align="left"></img>
-		{{ post.description }}
-	</td>
-	</table>
+				<img src="{{ post.image }}" width="200" height="200" align="left"></img>
+				{{ post.description }}
+			</td>
+		</table>
 	</div>
 
 	<div class="meta">
