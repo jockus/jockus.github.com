@@ -18,6 +18,9 @@ comments: false
 				{{ post.description }}
 			</td>
 		</table>
+		<i>
+			<a href="{{ post.url }}" align="bottom">read more...</a>
+		</i>
 	</div>
 
 	<div class="meta">
