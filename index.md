@@ -16,16 +16,13 @@ comments: false
 			<td>
 				<img src="{{ post.image }}" width="200" height="200" align="left"></img>
 				{{ post.description }}
-				<i>
-					<a href="{{ post.url }}" align="bottom">read more...</a>
-				</i>
+				<br/>
 			</td>
  		</table>
 	</div>
-
-	<div class="meta">
-		<a href="{{ post.url }}#disqus_thread"></a>
-	</div>
+				<div class="meta">
+					<a href="{{ post.url }}#disqus_thread"></a>
+				</div>
   </div>
   {% endfor %}
 </div>

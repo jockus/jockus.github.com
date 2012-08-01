@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Carlin Compressor
-description: I've got an addiction to fuzz pedals. They're a strange breed - technically they are very simple, but they all seem to sound different. Last weekend I built my first guitar pedal, a copy of a rare 70s fuzz pedal from Sweden called the Carlin Compressor.
-image: /images/200by200.jpg
+description: I've got an addiction to fuzz pedals. They're a strange breed - circuit-wise they're similar, but they all seem to sound different. Last weekend I built my first guitar pedal, a copy of a quite different, rare 70s fuzz pedal from Sweden called the Carlin Compressor.
+image: /images/carlin_compressor.jpg
 ---
 
 ## Fuzzy nuts
