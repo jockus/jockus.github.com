@@ -16,11 +16,11 @@ comments: false
 			<td>
 				<img src="{{ post.image }}" width="200" height="200" align="left"></img>
 				{{ post.description }}
+				<i>
+					<a href="{{ post.url }}" align="bottom">read more...</a>
+				</i>
 			</td>
-		</table>
-		<i>
-			<a href="{{ post.url }}" align="bottom">read more...</a>
-		</i>
+ 		</table>
 	</div>
 
 	<div class="meta">
