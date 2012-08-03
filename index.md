@@ -14,7 +14,7 @@ comments: false
 	<div class="article-text">
 		<table>
 			<td>
-				<img src="{{ post.image }}" width="200" height="200" align="left"></img>
+				<a href="{{ post.url }}"> <img src="{{ post.image }}" width="200" height="200" align="left" /> </a>
 				{{ post.description }}
 				<br/>
 			</td>
