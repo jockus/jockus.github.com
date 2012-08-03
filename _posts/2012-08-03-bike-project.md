@@ -22,7 +22,7 @@ However as I'm now living the UK I happened upon something different than the cl
 ## Cafe racer
 <img src="/images/triton.jpg" align="right"  width="300" />
 
-The classic cafe racer bikes were Norton and Triumph. Those are the ones that were around post WWII in the uk, and what people used to do is build a Triton - take the powerful engine out of a Triumph and put it in a well handling Norton frame, to build on each bikes strength. But cafe racers moved with the times, and as Japanese bikes became popular, they were used to build cafe racers too. Most people building cafe racers today tend to go for a 70's Honda CB-series bike. This is what I initially aimed for too as I started to research what bike to base it on. Then that all change when I saw the bike below for sale on eBay. It blew me away.
+The classic cafe racer bikes were Norton and Triumph. Those are the ones that were around post WWII in the uk, and what people used to do is build a Triton - take the powerful engine out of a Triumph and put it in a well handling Norton frame, to build on each bikes strength. But cafe racers moved with the times, and as Japanese bikes became popular, they were used to build cafe racers too. Most people building cafe racers today tend to go for a 70's Honda CB-series bike. That's is what I initially aimed for too as I started to research what bike to base it on. That all changed when I saw the bike below for sale on eBay. It blew me away.
 
 ## Classy, quick... and fearsome!
 <a href="/images/suzuki.jpg"> <img src="/images/suzuki.jpg" align="right" width="300" /> </a>
