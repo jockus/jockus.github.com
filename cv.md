@@ -8,7 +8,7 @@ comments: false
 
 Here you can download my CV in:
 
-[Word-format](/cv/cvjoakimhentula.doc)
+[Word-format](/cv/cvjoakimhentula.docx)
 
 or
 
