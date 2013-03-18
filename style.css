@@ -327,12 +327,12 @@ body {
 }
 div#sidebar {
   background-color: #ffffff;
-  box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px;
+  /* box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px;
   -moz-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px;
-  -webkit-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px;
+  -webkit-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px; */
 }
 div#sidebar h1, div#sidebar h1 a {
-  color: #ffffff;
+  color: #8d8d8d;
 }
 div#content {
   background-color: transparent;
