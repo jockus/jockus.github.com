@@ -16,6 +16,7 @@ b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
 b2DebugDraw = Box2D.Dynamics.b2DebugDraw
 
 world = new b2World( new b2Vec2(0, 10), true )
+window.world = world
 
 fixDef = new b2FixtureDef
 fixDef.density = 1.0
@@ -33,29 +34,16 @@ fixDef.shape.SetAsBox(20, 0.5)
 world.CreateBody(bodyDef).CreateFixture(fixDef)
 
 # create some objects
-bodyDef.type = b2Body.b2_dynamicBody
-fixDef.shape = new b2PolygonShape
-fixDef.shape.SetAsBox( 1, 10)
-bodyDef.position.x = 0
-bodyDef.position.y = 0
-body = world.CreateBody(bodyDef)
-body.CreateFixture(fixDef)
-
-posX = localStorage.getItem( "positionX" )
-posY = localStorage.getItem( "positionY" )
-if posX? and posY?
-    console.log( posX )
-    console.log( posY )
-    body.SetPosition( { x: parseFloat( posX ), y: parseFloat( posY ) } )
 
 physicsScaleX = 100
 physicsScaleY = -100
 
 ## Audio
 filter = 0
-ssource = 0
+source = 0
 loadedAudio = false
-context = new webkitAudioContext()
+context = if webkitAudioContext? then new webkitAudioContext() else 0
+console.log(webkitAudioContext)
 
 playAudioFile = (buffer) ->
     source = context.createBufferSource()
@@ -67,20 +55,21 @@ playAudioFile = (buffer) ->
 
     source.connect(filter);
     filter.connect(context.destination);
-    # source.start(0)
+    source.start(0)
 
 
 loadAudioFile = (url) ->
     request = new XMLHttpRequest()
 
-    request.open('get', 'test.wav', true)
+    request.open('get', 'jinroh02.mp3', true)
     request.responseType = 'arraybuffer'
     request.onload = -> 
         context.decodeAudioData(request.response, (incomingBuffer) ->
             playAudioFile(incomingBuffer) )
     request.send()
 
-# loadAudioFile()
+# if webkitAudioContext?
+#     loadAudioFile()
 
 frequencyChange = (value) ->
    minValue = 40
@@ -90,10 +79,8 @@ frequencyChange = (value) ->
    filter.frequency.value = maxValue * multiplier
 window.frequencyChange = frequencyChange
 
-startMusic = ->
-    if loadedAudio
-        source.start(0)
-window.startMusic = startMusic
+window.startMusic = ->
+    loadAudioFile()
 
 ##UI
 gui = new dat.GUI();
@@ -101,7 +88,7 @@ gui = new dat.GUI();
 ## Graphics
 
 num_meshes = 10
-Gos = [[],[],[]]
+Gos = []
 
 renderer = 0
 scene = 0
@@ -109,12 +96,58 @@ camera = 0
 
 controls = 0
 
-sprite = 0
-spriteMat = 0
-
+createNewMan = false
 class Go
-    constructor: (@mesh,@tween) ->
+    constructor: () ->
 
+class ContactListener
+    constructor: () ->
+    PreSolve: (contact, oldManifold) ->
+    PostSolve: (contact, contactImpulse ) ->
+    BeginContact: (contact) ->
+        createNewMan = true
+    EndContact: (contact) ->
+        
+
+contactListener = new ContactListener
+
+world.SetContactListener( contactListener )
+
+
+
+createMan = (posX, posY) ->
+    
+    bodyDef.type = b2Body.b2_dynamicBody
+    fixDef.shape = new b2PolygonShape
+    fixDef.shape.SetAsBox( 1, 10)
+    bodyDef.position.x = posX
+    bodyDef.position.y = posY
+    body = window.world.CreateBody(bodyDef)
+    body.CreateFixture(fixDef)
+    
+    spriteMap = THREE.ImageUtils.loadTexture( "run.jpg" )
+    ## sprite = new THREE.Sprite( { map: spriteMap, useScreenCoordinates: false, color: 0xffffff } )
+    spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false, transparent: true } )
+    sprite = new THREE.Sprite( spriteMat );
+    sprite.scale.set( 100, 100, 1 )
+    spriteMat.opacity = 0.6
+    scene.add( sprite )
+    spriteGo = new Go()
+    spriteGo.sprite = sprite
+    spriteGo.body = body
+    Gos.push( spriteGo )
+    
+    numFrames = 10
+    startFrame = 1
+    endFrame = 7
+    console.log( spriteMat.uvScale )
+    spriteMat.uvScale.set(1 / numFrames, 1)
+
+    spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
+        frameX = ( 1 / 10 ) * Math.floor( @frame )
+        spriteMat.uvOffset.set( frameX, 0 ) )
+        # spriteMat.uvOffset = [ 100, 0 ] )
+    spriteTween.start()
 
 init = () ->
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
@@ -143,26 +176,6 @@ init = () ->
 
     scene.add( new  THREE.AxisHelper( 100 ) )
 
-    spriteMap = THREE.ImageUtils.loadTexture( "run.jpg" )
-    ## sprite = new THREE.Sprite( { map: spriteMap, useScreenCoordinates: false, color: 0xffffff } )
-    spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false, transparent: true } )
-    sprite = new THREE.Sprite( spriteMat );
-    sprite.scale.set( 100, 100, 1 )
-    spriteMat.opacity = 0.6
-    scene.add( sprite )
-    
-    numFrames = 10
-    startFrame = 1
-    endFrame = 7
-    console.log( spriteMat.uvScale )
-    spriteMat.uvScale.set(1 / numFrames, 1)
-
-    spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
-        console.log(spriteMat.uvOffset )
-        frameX = ( 1 / 10 ) * Math.floor( @frame )
-        spriteMat.uvOffset.set( frameX, 0 ) )
-        # spriteMat.uvOffset = [ 100, 0 ] )
-    spriteTween.start()
 
     window.physicsScaleY = physicsScaleY
     gui.add(this, 'physicsScaleY', -10, 10);
@@ -174,7 +187,7 @@ init = () ->
 
     
     for i in [0...num_meshes]
-        Gos[i] = new Go(mesh,0)
+        # Gos[i] = new Go
         mesh = new THREE.Mesh( geometry, material ) 
         mesh.position.x = ( i - num_meshes / 2.0 ) * 300
         mesh.position.y = 0
@@ -209,6 +222,10 @@ init = () ->
     document.body.appendChild( renderer.domElement )
     initialised = true
 
+    createMan(0, -15)
+
+    for go in Gos
+        console.log( go )
 
 pause = false
 window.togglePause = () ->
@@ -233,16 +250,21 @@ animate = (time) ->
         world.ClearForces();
         TWEEN.update()
         
-        localStorage.setItem( "positionX", body.GetPosition().x )
-        localStorage.setItem( "positionY", body.GetPosition().y )
         localStorage.setItem( "controls", JSON.stringify( controls.object.position ) )
         ## console.log( JSON.stringify( controls.object.position ) )
-    
+   
+    if createNewMan
+        posX = Math.floor((Math.random()*40)-20);
+        createMan(posX, -15)
+        createNewMan = false
+
     ## Graphics
     # requestAnimationFrame( animate )
-
-    sprite.position.x = body.GetPosition().x * physicsScaleX
-    sprite.position.y = body.GetPosition().y * physicsScaleY
+    for go in Gos
+        if go.body? && go.sprite?
+            console.log("update")
+            go.sprite.position.x = go.body.GetPosition().x * physicsScaleX
+            go.sprite.position.y = go.body.GetPosition().y * physicsScaleY
 
     controls.update()
     renderer.render( scene, camera )
