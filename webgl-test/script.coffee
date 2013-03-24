@@ -15,20 +15,20 @@ b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
 b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
 b2DebugDraw = Box2D.Dynamics.b2DebugDraw
 
-world = new b2World( new b2Vec2(0, 10), true )
+world = new b2World( new b2Vec2(0, -10), true )
 window.world = world
 
 fixDef = new b2FixtureDef
 fixDef.density = 1.0
 fixDef.friction = 0.5
-fixDef.restitution = 1.0
+fixDef.restitution = 0.3
 
 bodyDef = new b2BodyDef
 
 # create ground
 bodyDef.type = b2Body.b2_staticBody
 bodyDef.position.x = 0
-bodyDef.position.y = 20
+bodyDef.position.y = -20
 fixDef.shape = new b2PolygonShape
 fixDef.shape.SetAsBox(20, 0.5)
 world.CreateBody(bodyDef).CreateFixture(fixDef)
@@ -36,14 +36,21 @@ world.CreateBody(bodyDef).CreateFixture(fixDef)
 # create some objects
 
 physicsScaleX = 100
-physicsScaleY = -100
+physicsScaleY = 100
 
 ## Audio
 filter = 0
 source = 0
 loadedAudio = false
-context = if webkitAudioContext? then new webkitAudioContext() else 0
-console.log(webkitAudioContext)
+console.log( AudioContext? )
+if AudioContext?
+    context = new AudioContext();
+else if webkitAudioContext?
+    context = new webkitAudioContext();
+else
+    context = 0
+console.log( context )
+
 
 playAudioFile = (buffer) ->
     source = context.createBufferSource()
@@ -55,7 +62,7 @@ playAudioFile = (buffer) ->
 
     source.connect(filter);
     filter.connect(context.destination);
-    source.start(0)
+    # source.start(0)
 
 
 loadAudioFile = (url) ->
@@ -87,6 +94,34 @@ gui = new dat.GUI();
 
 ## Graphics
 
+class Body
+    constructor: (@go, @body) ->
+
+    setTargetPosition: (targetPosition) ->
+        @targetPosition = targetPosition
+
+    update: () ->
+        if @targetPosition?
+            @targetPosition.x = @body.GetPosition().x * physicsScaleX
+            @targetPosition.y = @body.GetPosition().y * physicsScaleY
+
+    serialise: () ->
+        
+Actions = { IDLE: 0, JUMP : 1 }
+class PlayerControls
+    currentAction: Actions.IDLE
+    callback: () => @currentAction = Actions.JUMP
+
+    constructor: (@go) ->
+        Mousetrap.bind( "up", @callback, 'keydown' )
+
+    update: () ->
+        if @currentAction == Actions.JUMP
+            @go.body.body.SetLinearVelocity( new b2Vec2( 0, 10) )
+            @go.body.body.SetAwake( true )
+            @currentAction = Actions.IDLE
+
+
 num_meshes = 10
 Gos = []
 
@@ -98,7 +133,6 @@ controls = 0
 
 createNewMan = false
 class Go
-    constructor: () ->
 
 class ContactListener
     constructor: () ->
@@ -127,14 +161,17 @@ createMan = (posX, posY) ->
     
     spriteMap = THREE.ImageUtils.loadTexture( "run.jpg" )
     ## sprite = new THREE.Sprite( { map: spriteMap, useScreenCoordinates: false, color: 0xffffff } )
-    spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false, transparent: true } )
+    spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false } )
     sprite = new THREE.Sprite( spriteMat );
-    sprite.scale.set( 100, 100, 1 )
-    spriteMat.opacity = 0.6
+    # sprite.scale.set( spriteMap.image.width, spriteMap.image.height, 1 )
+    sprite.scale.multiplyScalar( 100 )
+    console.log( spriteMap.image.width )
     scene.add( sprite )
     spriteGo = new Go()
     spriteGo.sprite = sprite
-    spriteGo.body = body
+    spriteGo.body = new Body( spriteGo, body ) 
+    spriteGo.body.setTargetPosition( sprite.position )
+    spriteGo.controls = new PlayerControls( spriteGo )
     Gos.push( spriteGo )
     
     numFrames = 10
@@ -157,9 +194,8 @@ init = () ->
 
     controls = new THREE.OrbitControls( camera )
     controlsStore = localStorage.getItem( "controls" )
-    if controlsStore?
+    if controlsStore?   
         camera.position.copy( JSON.parse( controlsStore ) )
-        console.log( controlsStore )
     # controls.autoRotate = true
     # controls.userRotate = false;
 
@@ -168,11 +204,11 @@ init = () ->
     scene = new THREE.Scene()
 
 
-    planeW = 100
-    planeH = 100
-    plane = new THREE.Mesh( new THREE.PlaneGeometry( planeW* 100, planeH* 100, planeW, planeH ), new   THREE.MeshBasicMaterial( { color: 0xaaaaaa, wireframe: true } ) )
-    plane.rotation.x = Math.PI/2
-    scene.add(plane)
+    # planeW = 100
+    # planeH = 100
+    # plane = new THREE.Mesh( new THREE.PlaneGeometry( planeW* 100, planeH* 100, planeW, planeH ), new   THREE.MeshBasicMaterial( { color: 0xaaaaaa, wireframe: true } ) )
+    # plane.rotation.x = Math.PI/2
+    # scene.add(plane)
 
     scene.add( new  THREE.AxisHelper( 100 ) )
 
@@ -182,7 +218,7 @@ init = () ->
 
 
     geometry = new THREE.CubeGeometry( 200, 200, 200 )
-    material = new THREE.MeshBasicMaterial( { color: 0x777722, wireframe: false, transparent: true, opacity: 0.1} )
+    material = new THREE.MeshBasicMaterial( { color: 0x777722, wireframe: false } )
     material.uvScale = [1, 1]
 
     
@@ -198,7 +234,7 @@ init = () ->
     groundGeom = new THREE.CubeGeometry( 20 * physicsScaleX, 0.5 * physicsScaleY, 0.5 * 20 * physicsScaleX )
     mesh = new THREE.Mesh( groundGeom, material ) 
     mesh.position.x = 0
-    mesh.position.y = 10 * physicsScaleY
+    mesh.position.y = -10 * physicsScaleY
     mesh.position.z = 0
     scene.add( mesh )
 
@@ -212,7 +248,10 @@ init = () ->
     # tween2.start()
 
 
-    renderer = new THREE.WebGLRenderer()
+    # if Detector.webgl
+    renderer = new THREE.WebGLRenderer( {antialias: true } )
+    # else
+    # renderer = new THREE.CanvasRenderer()
     renderer.setSize( window.innerWidth, window.innerHeight )
 
     tween = new TWEEN.Tween( { meshes: 1 } ).to( { meshes: 9 }, 1000 ).repeat( Infinity ).onUpdate( ->
@@ -222,7 +261,7 @@ init = () ->
     document.body.appendChild( renderer.domElement )
     initialised = true
 
-    createMan(0, -15)
+    createMan(0, 0)
 
     for go in Gos
         console.log( go )
@@ -255,16 +294,13 @@ animate = (time) ->
    
     if createNewMan
         posX = Math.floor((Math.random()*40)-20);
-        createMan(posX, -15)
+        # createMan(posX, -15)
         createNewMan = false
 
-    ## Graphics
-    # requestAnimationFrame( animate )
     for go in Gos
-        if go.body? && go.sprite?
-            console.log("update")
-            go.sprite.position.x = go.body.GetPosition().x * physicsScaleX
-            go.sprite.position.y = go.body.GetPosition().y * physicsScaleY
+        for own key, value of go
+            if value.update? 
+                value.update()
 
     controls.update()
     renderer.render( scene, camera )

@@ -50,7 +50,7 @@ THREE.OrbitControls = function ( object, domElement ) {
   var thetaDelta = 0;
   var scale = 1;
 
-  lastPosition = new THREE.Vector3();
+  var lastPosition = new THREE.Vector3();
 
   var STATE = { NONE : -1, ROTATE : 0, ZOOM : 1 };
   var state = STATE.NONE;
@@ -204,7 +204,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     if ( !scope.userRotate ) return;
 
-    event.preventDefault();
+    // event.preventDefault();
 
     if ( event.button === 0 || event.button === 2 ) {
 
@@ -299,9 +299,56 @@ THREE.OrbitControls = function ( object, domElement ) {
 
   }
 
+
+  function onTouchStart( event ) {
+    if( event.touches.length === 1 ) {
+      state = STATE.ROTATE;
+      rotateStart.set( event.touches[ 0 ].clientX, event.touches [ 0 ].clientY ); 
+    } else if ( event.touches.length === 2 ) {
+      state = STATE.ZOOM;
+      var deltaX = event.touches[ 0 ].clientX - event.touches[ 1 ].clientX;
+      var deltaY = event.touches[ 0 ].clientY - event.touches[ 1 ].clientY;
+      Math.abs( deltaX );
+      Math.abs( deltaY );
+      zoomStart.set( deltaX, deltaY );
+    }
+  }
+
+  function onTouchMove( event ) {
+
+    event.preventDefault();
+
+    if ( state === STATE.ROTATE ) {
+
+      rotateEnd.set( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+      rotateDelta.subVectors( rotateEnd, rotateStart );
+
+      scope.rotateLeft( 2 * Math.PI * rotateDelta.x / PIXELS_PER_ROUND * scope.userRotateSpeed );
+      scope.rotateUp( 2 * Math.PI * rotateDelta.y / PIXELS_PER_ROUND * scope.userRotateSpeed );
+
+      rotateStart.copy( rotateEnd );
+
+    } else if ( state === STATE.ZOOM ) {
+      var deltaX = event.touches[ 0 ].clientX - event.touches[ 1 ].clientX;
+      var deltaY = event.touches[ 0 ].clientY - event.touches[ 1 ].clientY;
+      Math.abs( deltaX );
+      Math.abs( deltaY );
+      zoomEnd.set( deltaX, deltaY );
+      zoomDelta.subVectors( zoomEnd, zoomStart );
+      if ( zoomStart.lengthSq() < zoomEnd.lengthSq() ) {
+        scope.zoomOut();
+      } else {
+       scope.zoomIn();
+      }
+      zoomStart.copy( zoomEnd );
+    }
+  }
+
+
   this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
   this.domElement.addEventListener( 'mousedown', onMouseDown, false );
   this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
   this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
-
+  this.domElement.addEventListener( 'touchstart', onTouchStart, false );
+  this.domElement.addEventListener( 'touchmove', onTouchMove, false );
 };
