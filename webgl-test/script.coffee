@@ -147,7 +147,31 @@ contactListener = new ContactListener
 
 world.SetContactListener( contactListener )
 
+class Sprite
+    constructor: (@go, filename) ->
+        spriteMap = THREE.ImageUtils.loadTexture( "run.jpg", null, @onLoad )
+        spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false } )
+        @sprite = new THREE.Sprite( spriteMat );
+        @sprite.scale.multiplyScalar( 100 )
+        console.log( spriteMap.image.width )
 
+        numFrames = 10
+        startFrame = 1
+        endFrame = 7
+        console.log( spriteMat.uvScale )
+        spriteMat.uvScale.set(1 / numFrames, 1)
+
+        spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
+            frameX = ( 1 / 10 ) * Math.floor( @frame )
+            spriteMat.uvOffset.set( frameX, 0 ) )
+            # spriteMat.uvOffset = [ 100, 0 ] )
+        spriteTween.start()
+
+    onLoad: (texture) =>
+        console.log( "texture"  )
+        @sprite.scale.set( texture.image.width / 10, texture.image.height, 1 ) 
+        @sprite.scale.multiplyScalar( 2 )
+ 
 
 createMan = (posX, posY) ->
     
@@ -159,32 +183,18 @@ createMan = (posX, posY) ->
     body = window.world.CreateBody(bodyDef)
     body.CreateFixture(fixDef)
     
-    spriteMap = THREE.ImageUtils.loadTexture( "run.jpg" )
+    # How to deal with this callback? sprite component which owns sprite?
     ## sprite = new THREE.Sprite( { map: spriteMap, useScreenCoordinates: false, color: 0xffffff } )
-    spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false } )
-    sprite = new THREE.Sprite( spriteMat );
-    # sprite.scale.set( spriteMap.image.width, spriteMap.image.height, 1 )
-    sprite.scale.multiplyScalar( 100 )
-    console.log( spriteMap.image.width )
-    scene.add( sprite )
     spriteGo = new Go()
-    spriteGo.sprite = sprite
+    spriteComp = new Sprite( spriteGo, "run.jpg" )
+    scene.add( spriteComp.sprite  )
+    spriteGo.sprite = spriteComp
     spriteGo.body = new Body( spriteGo, body ) 
-    spriteGo.body.setTargetPosition( sprite.position )
+    spriteGo.body.setTargetPosition( spriteComp.sprite.position )
     spriteGo.controls = new PlayerControls( spriteGo )
     Gos.push( spriteGo )
     
-    numFrames = 10
-    startFrame = 1
-    endFrame = 7
-    console.log( spriteMat.uvScale )
-    spriteMat.uvScale.set(1 / numFrames, 1)
 
-    spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
-        frameX = ( 1 / 10 ) * Math.floor( @frame )
-        spriteMat.uvOffset.set( frameX, 0 ) )
-        # spriteMat.uvOffset = [ 100, 0 ] )
-    spriteTween.start()
 
 init = () ->
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
