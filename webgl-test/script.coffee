@@ -95,7 +95,9 @@ gui = new dat.GUI();
 ## Graphics
 
 class Body
-    constructor: (@go, @body) ->
+    constructor: (@go, bodyDef, fixDef) ->
+        @body = world.CreateBody(bodyDef)
+        @body.CreateFixture(fixDef)
 
     setTargetPosition: (targetPosition) ->
         @targetPosition = targetPosition
@@ -131,6 +133,40 @@ camera = 0
 
 controls = 0
 
+
+moving = false
+moveStart = new b2Vec2()
+cameraStart = new b2Vec2()
+
+onMouseDown = ( event ) ->
+    moveStart.Set( event.clientX, event.clientY )
+    cameraStart.Set( camera.position.x, camera.position.y )
+    moving = true
+onMouseUp = ( event ) ->
+    moving = false
+onMouseWheel = ( event ) ->
+onTouchStart = ( event ) ->
+onTouchMove = ( event ) ->
+onMouseMove = ( event ) ->
+    if moving
+        camera.position.x = cameraStart.x + ( moveStart.x - event.clientX ) * 10
+        camera.position.y = cameraStart.y + ( event.clientY - moveStart.y ) * 10
+
+window.addEventListener( 'contextmenu', ( event ) -> 
+        event.preventDefault()
+    , false )
+
+window.addEventListener( 'mousedown', onMouseDown, false )
+window.addEventListener( 'mouseup', onMouseUp, false )
+window.addEventListener( 'mousewheel', onMouseWheel, false )
+window.addEventListener( 'DOMMouseScroll', onMouseWheel, false )
+window.addEventListener( 'touchstart', onTouchStart, false )
+window.addEventListener( 'touchmove', onTouchMove, false )
+window.addEventListener( 'mousemove', onMouseMove, false )
+
+
+
+
 createNewMan = false
 class Go
 
@@ -149,7 +185,7 @@ world.SetContactListener( contactListener )
 
 class Sprite
     constructor: (@go, filename) ->
-        spriteMap = THREE.ImageUtils.loadTexture( "run.jpg", null, @onLoad )
+        spriteMap = THREE.ImageUtils.loadTexture( filename, null, @onLoad )
         spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false } )
         @sprite = new THREE.Sprite( spriteMat );
         @sprite.scale.multiplyScalar( 100 )
@@ -174,38 +210,52 @@ class Sprite
  
 
 createMan = (posX, posY) ->
-    
+    spriteGo = new Go()
+    spriteComp = new Sprite( spriteGo, "run.jpg" )
+    scene.add( spriteComp.sprite  )
+    spriteGo.sprite = spriteComp
+
     bodyDef.type = b2Body.b2_dynamicBody
     fixDef.shape = new b2PolygonShape
     fixDef.shape.SetAsBox( 1, 10)
     bodyDef.position.x = posX
     bodyDef.position.y = posY
-    body = window.world.CreateBody(bodyDef)
-    body.CreateFixture(fixDef)
-    
-    # How to deal with this callback? sprite component which owns sprite?
-    ## sprite = new THREE.Sprite( { map: spriteMap, useScreenCoordinates: false, color: 0xffffff } )
-    spriteGo = new Go()
-    spriteComp = new Sprite( spriteGo, "run.jpg" )
-    scene.add( spriteComp.sprite  )
-    spriteGo.sprite = spriteComp
-    spriteGo.body = new Body( spriteGo, body ) 
+    spriteGo.body = new Body( spriteGo, bodyDef, fixDef ) 
     spriteGo.body.setTargetPosition( spriteComp.sprite.position )
     spriteGo.controls = new PlayerControls( spriteGo )
     Gos.push( spriteGo )
     
 
+createHouse = (posX, posY) ->
+    spriteGo = new Go()
+    spriteComp = new Sprite( spriteGo, "houses.jpg" )
+    scene.add( spriteComp.sprite  )
+    spriteGo.sprite = spriteComp
+
+    bodyDef.type = b2Body.b2_staticBody
+    bodyDef.position.x = posX
+    bodyDef.position.y = posY
+    fixDef.shape = new b2PolygonShape
+    fixDef.shape.SetAsBox(10, 10)
+
+    spriteGo.body = new Body( spriteGo, bodyDef, fixDef ) 
+    spriteGo.body.setTargetPosition( spriteComp.sprite.position )
+    spriteGo.controls = new PlayerControls( spriteGo )
+    Gos.push( spriteGo )
 
 init = () ->
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
     # camera.position.x = 2000
     # camera.position.y = 2000
     camera.position.z = 4000
+    cameraStore = localStorage.getItem( "camera" )
+    if cameraStore?
+        camera.position.copy( JSON.parse( cameraStore ) )
 
-    controls = new THREE.OrbitControls( camera )
-    controlsStore = localStorage.getItem( "controls" )
-    if controlsStore?   
-        camera.position.copy( JSON.parse( controlsStore ) )
+    #' controls = new THREE.OrbitControls( camera )
+    # controlsStore = localStorage.getItem( "controls" )
+    # if controlsStore?   
+    #     camera.position.copy( JSON.parse( controlsStore ) )
     # controls.autoRotate = true
     # controls.userRotate = false;
 
@@ -272,6 +322,7 @@ init = () ->
     initialised = true
 
     createMan(0, 0)
+    createHouse(Math.random() % 40 - 20, -20)
 
     for go in Gos
         console.log( go )
@@ -299,7 +350,8 @@ animate = (time) ->
         world.ClearForces();
         TWEEN.update()
         
-        localStorage.setItem( "controls", JSON.stringify( controls.object.position ) )
+        localStorage.setItem( "camera", JSON.stringify( camera.position ) )
+        # localStorage.setItem( "controls", JSON.stringify( controls.object.position ) )
         ## console.log( JSON.stringify( controls.object.position ) )
    
     if createNewMan
@@ -312,7 +364,7 @@ animate = (time) ->
             if value.update? 
                 value.update()
 
-    controls.update()
+    # controls.update()
     renderer.render( scene, camera )
 
 if !initialised
