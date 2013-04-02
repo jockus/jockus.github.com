@@ -107,7 +107,8 @@ class Body
             @targetPosition.x = @body.GetPosition().x * physicsScaleX
             @targetPosition.y = @body.GetPosition().y * physicsScaleY
 
-    serialise: () ->
+    toJSON: () ->
+        { position: @body.GetPosition() }
         
 Actions = { IDLE: 0, JUMP : 1 }
 class PlayerControls
@@ -122,6 +123,9 @@ class PlayerControls
             @go.body.body.SetLinearVelocity( new b2Vec2( 0, 10) )
             @go.body.body.SetAwake( true )
             @currentAction = Actions.IDLE
+
+    toJSON: () ->
+        {}
 
 
 num_meshes = 10
@@ -169,6 +173,7 @@ window.addEventListener( 'mousemove', onMouseMove, false )
 
 createNewMan = false
 class Go
+    constructor: (@prefab) ->
 
 class ContactListener
     constructor: () ->
@@ -197,20 +202,23 @@ class Sprite
         console.log( spriteMat.uvScale )
         spriteMat.uvScale.set(1 / numFrames, 1)
 
-        spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
+        @spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
             frameX = ( 1 / 10 ) * Math.floor( @frame )
             spriteMat.uvOffset.set( frameX, 0 ) )
             # spriteMat.uvOffset = [ 100, 0 ] )
-        spriteTween.start()
+        @spriteTween.start()
 
     onLoad: (texture) =>
         console.log( "texture"  )
         @sprite.scale.set( texture.image.width / 10, texture.image.height, 1 ) 
         @sprite.scale.multiplyScalar( 2 )
+
+    toJSON: () ->
+        {  }
  
 
 createMan = (posX, posY) ->
-    spriteGo = new Go()
+    spriteGo = new Go( "Man" )
     spriteComp = new Sprite( spriteGo, "run.jpg" )
     scene.add( spriteComp.sprite  )
     spriteGo.sprite = spriteComp
@@ -225,9 +233,8 @@ createMan = (posX, posY) ->
     spriteGo.controls = new PlayerControls( spriteGo )
     Gos.push( spriteGo )
     
-
 createHouse = (posX, posY) ->
-    spriteGo = new Go()
+    spriteGo = new Go( "House")
     spriteComp = new Sprite( spriteGo, "houses.jpg" )
     scene.add( spriteComp.sprite  )
     spriteGo.sprite = spriteComp
@@ -248,18 +255,6 @@ init = () ->
     # camera.position.x = 2000
     # camera.position.y = 2000
     camera.position.z = 4000
-    cameraStore = localStorage.getItem( "camera" )
-    if cameraStore?
-        camera.position.copy( JSON.parse( cameraStore ) )
-
-    #' controls = new THREE.OrbitControls( camera )
-    # controlsStore = localStorage.getItem( "controls" )
-    # if controlsStore?   
-    #     camera.position.copy( JSON.parse( controlsStore ) )
-    # controls.autoRotate = true
-    # controls.userRotate = false;
-
-    # controls.addEventListener( 'change', render )
 
     scene = new THREE.Scene()
 
@@ -343,28 +338,32 @@ animStep = (t) ->
     previousTime = t 
     requestAnimationFrame( animStep )
 
+serialiseTimer = 0
 animate = (time) ->
     ## Physics
     if !pause
         world.Step(time, 10, 10);
         world.ClearForces();
         TWEEN.update()
-        
-        localStorage.setItem( "camera", JSON.stringify( camera.position ) )
-        # localStorage.setItem( "controls", JSON.stringify( controls.object.position ) )
-        ## console.log( JSON.stringify( controls.object.position ) )
-   
-    if createNewMan
-        posX = Math.floor((Math.random()*40)-20);
-        # createMan(posX, -15)
-        createNewMan = false
+
 
     for go in Gos
         for own key, value of go
             if value.update? 
                 value.update()
+    objects = {}
+    serialiseTimer += time
+    if serialiseTimer > 3.0
+        serialiseTimer = 0
+        for go in Gos
+            object = { prefab: go.prefab }
+            for own key, value of go
+                if value.toJSON? 
+                    object += value.toJSON()
+            objects += object
+        console.log( JSON.stringify( objects ) ) 
+        JSON.stringify( Gos )                
 
-    # controls.update()
     renderer.render( scene, camera )
 
 if !initialised
