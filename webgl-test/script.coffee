@@ -2,6 +2,16 @@
 ## http://thinkpixellab.com/pxloader/
 
 initialised = false
+
+stats = new Stats()
+stats.setMode(0)
+stats.domElement.style.position = 'absolute'
+stats.domElement.style.left = '0px'
+stats.domElement.style.top = '0px'
+document.body.appendChild( stats.domElement )
+
+
+
 ## Physics
     
 b2Vec2 = Box2D.Common.Math.b2Vec2
@@ -15,41 +25,21 @@ b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
 b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
 b2DebugDraw = Box2D.Dynamics.b2DebugDraw
 
-world = new b2World( new b2Vec2(0, -10), true )
-window.world = world
+world = new b2World( new b2Vec2(0, -100), true )
 
-fixDef = new b2FixtureDef
-fixDef.density = 1.0
-fixDef.friction = 0.5
-fixDef.restitution = 0.3
-
-bodyDef = new b2BodyDef
-
-# create ground
-bodyDef.type = b2Body.b2_staticBody
-bodyDef.position.x = 0
-bodyDef.position.y = -20
-fixDef.shape = new b2PolygonShape
-fixDef.shape.SetAsBox(20, 0.5)
-world.CreateBody(bodyDef).CreateFixture(fixDef)
-
-# create some objects
-
-physicsScaleX = 100
-physicsScaleY = 100
+physicsScaleX = 10
+physicsScaleY = 10
 
 ## Audio
 filter = 0
 source = 0
 loadedAudio = false
-console.log( AudioContext? )
 if AudioContext?
     context = new AudioContext();
 else if webkitAudioContext?
     context = new webkitAudioContext();
 else
     context = 0
-console.log( context )
 
 
 playAudioFile = (buffer) ->
@@ -89,18 +79,14 @@ window.frequencyChange = frequencyChange
 window.startMusic = ->
     loadAudioFile()
 
-##UI
-gui = new dat.GUI();
 
 ## Graphics
 
 class Body
-    constructor: (@go, bodyDef, fixDef) ->
+    constructor: (@go, bodyDef, fixDef, @targetPosition) ->
         @body = world.CreateBody(bodyDef)
         @body.CreateFixture(fixDef)
-
-    setTargetPosition: (targetPosition) ->
-        @targetPosition = targetPosition
+        @body.SetUserData(@go)
 
     update: () ->
         if @targetPosition?
@@ -109,26 +95,39 @@ class Body
 
     toJSON: () ->
         { position: @body.GetPosition() }
+    
+    parse: ( data ) ->
+        @body.SetPosition( data.position )
         
 Actions = { IDLE: 0, JUMP : 1 }
 class PlayerControls
     currentAction: Actions.IDLE
-    callback: () => @currentAction = Actions.JUMP
+    jumpCallback: () => 
+        if @onGround
+            @currentAction = Actions.JUMP
 
     constructor: (@go) ->
-        Mousetrap.bind( "up", @callback, 'keydown' )
+        Mousetrap.bind( "space", @jumpCallback, 'keydown' )
+
+    beginContact: ( go ) ->
+        if go.prefab? && go.prefab == "House"
+            @onGround = true
+
+    endContact: ( go ) ->
+        if go.prefab? && go.prefab == "House"
+            @onGround = false
 
     update: () ->
         if @currentAction == Actions.JUMP
-            @go.body.body.SetLinearVelocity( new b2Vec2( 0, 10) )
+            @go.body.body.SetLinearVelocity( new b2Vec2( 0, 40 ) )
             @go.body.body.SetAwake( true )
+            @go.body.body.SetActive( true )
             @currentAction = Actions.IDLE
 
     toJSON: () ->
         {}
 
 
-num_meshes = 10
 Gos = []
 
 renderer = 0
@@ -171,7 +170,6 @@ window.addEventListener( 'mousemove', onMouseMove, false )
 
 
 
-createNewMan = false
 class Go
     constructor: (@prefab) ->
 
@@ -180,157 +178,157 @@ class ContactListener
     PreSolve: (contact, oldManifold) ->
     PostSolve: (contact, contactImpulse ) ->
     BeginContact: (contact) ->
-        createNewMan = true
+        goA = contact.GetFixtureA().GetBody().GetUserData()
+        goB = contact.GetFixtureB().GetBody().GetUserData()
+        @notifyBeginContact( goA, goB )
+        @notifyBeginContact( goB, goA )
+
     EndContact: (contact) ->
-        
+        goA = contact.GetFixtureA().GetBody().GetUserData()
+        goB = contact.GetFixtureB().GetBody().GetUserData()
+        @notifyEndContact( goA, goB )
+        @notifyEndContact( goB, goA )
+    
+    notifyBeginContact: ( goA, goB ) ->
+        for own key, value of goA
+            if value.beginContact? 
+                value.beginContact( goB )
+
+    notifyEndContact: ( goA, goB ) ->
+        for own key, value of goA
+            if value.endContact? 
+                value.endContact( goB )
 
 contactListener = new ContactListener
 
 world.SetContactListener( contactListener )
 
 class Sprite
-    constructor: (@go, filename) ->
+    constructor: (@go, filename, @numFrames, startFrame, endFrame) ->
         spriteMap = THREE.ImageUtils.loadTexture( filename, null, @onLoad )
-        spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false } )
-        @sprite = new THREE.Sprite( spriteMat );
-        @sprite.scale.multiplyScalar( 100 )
-        console.log( spriteMap.image.width )
+        @spriteMat = new THREE.SpriteMaterial( { map: spriteMap, color: 0xffffff, useScreenCoordinates: false, scaleByViewport: true } )
+        @sprite = new THREE.Sprite( @spriteMat );
 
-        numFrames = 10
-        startFrame = 1
-        endFrame = 7
-        console.log( spriteMat.uvScale )
-        spriteMat.uvScale.set(1 / numFrames, 1)
-
-        @spriteTween = new TWEEN.Tween( { frame: startFrame } ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
-            frameX = ( 1 / 10 ) * Math.floor( @frame )
-            spriteMat.uvOffset.set( frameX, 0 ) )
-            # spriteMat.uvOffset = [ 100, 0 ] )
+        @spriteMat.uvScale.set(1 / @numFrames, 1)
+        @spriteTween = new TWEEN.Tween( { frame: startFrame, numFrames: @numFrames, spriteMat: @spriteMat} ).to( { frame: endFrame }, 1000 ).repeat(Infinity).onUpdate( -> 
+            frameX = ( 1 / @numFrames ) * Math.floor( @frame )
+            @spriteMat.uvOffset.set( frameX, 0 ) )
+ 
         @spriteTween.start()
 
+        scene.add( @sprite )
+
     onLoad: (texture) =>
-        console.log( "texture"  )
-        @sprite.scale.set( texture.image.width / 10, texture.image.height, 1 ) 
-        @sprite.scale.multiplyScalar( 2 )
+        @sprite.scale.set( Math.floor( texture.image.width / @numFrames ), texture.image.height, 1 ) 
+
+    parse: ( data ) ->
+        @spriteMat.uvOffset.set( data.uvOffset.x, data.uvOffset.y )
 
     toJSON: () ->
-        {  }
- 
+        { uvOffset: @spriteMat.uvOffset }
 
 createMan = (posX, posY) ->
-    spriteGo = new Go( "Man" )
-    spriteComp = new Sprite( spriteGo, "run.jpg" )
-    scene.add( spriteComp.sprite  )
-    spriteGo.sprite = spriteComp
+    go = new Go( "Man" )
+    sprite = new Sprite( go, "run.jpg", 10, 1, 7 )
+    go.sprite = sprite
 
-    bodyDef.type = b2Body.b2_dynamicBody
+    width = 2
+    height = 3.2 
+    # graphicWidth = width * physicsScaleY
+    # graphicHeight = height * physicsScaleY 
+    # material = new THREE.MeshBasicMaterial( { color: 0x777722, wireframe: false } )
+    # groundGeom = new THREE.CubeGeometry( graphicWidth, graphicHeight, 1 )
+    # mesh = new THREE.Mesh( groundGeom, material ) 
+    # scene.add( mesh )
+
+    fixDef = new b2FixtureDef
+    fixDef.density = 1.0
+    fixDef.friction = 0
     fixDef.shape = new b2PolygonShape
-    fixDef.shape.SetAsBox( 1, 10)
+    fixDef.shape.SetAsBox( width * 0.5, height * 0.5 )
+
+    bodyDef = new b2BodyDef()
+    bodyDef.type = b2Body.b2_dynamicBody
     bodyDef.position.x = posX
     bodyDef.position.y = posY
-    spriteGo.body = new Body( spriteGo, bodyDef, fixDef ) 
-    spriteGo.body.setTargetPosition( spriteComp.sprite.position )
-    spriteGo.controls = new PlayerControls( spriteGo )
-    Gos.push( spriteGo )
+    go.body = new Body( go, bodyDef, fixDef, sprite.sprite.position ) 
+
+    go.controls = new PlayerControls( go )
+    Gos.push( go )
+    return go
     
 createHouse = (posX, posY) ->
-    spriteGo = new Go( "House")
-    spriteComp = new Sprite( spriteGo, "houses.jpg" )
-    scene.add( spriteComp.sprite  )
-    spriteGo.sprite = spriteComp
+    go = new Go( "House")
 
+    width = 20
+    height = 10 
+    graphicWidth = width * physicsScaleY
+    graphicHeight = height * physicsScaleY
+    material = new THREE.MeshBasicMaterial( { color: 0x777722, wireframe: false } )
+    groundGeom = new THREE.CubeGeometry( graphicWidth, graphicHeight, 1 )
+    mesh = new THREE.Mesh( groundGeom, material ) 
+    scene.add( mesh )
+
+    fixDef = new b2FixtureDef
+    fixDef.density = 1.0
+    fixDef.friction = 0
+    fixDef.shape = new b2PolygonShape
+    fixDef.shape.SetAsBox( width * 0.5, height * 0.5 )
+    bodyDef = new b2BodyDef()
     bodyDef.type = b2Body.b2_staticBody
     bodyDef.position.x = posX
     bodyDef.position.y = posY
-    fixDef.shape = new b2PolygonShape
-    fixDef.shape.SetAsBox(10, 10)
 
-    spriteGo.body = new Body( spriteGo, bodyDef, fixDef ) 
-    spriteGo.body.setTargetPosition( spriteComp.sprite.position )
-    spriteGo.controls = new PlayerControls( spriteGo )
-    Gos.push( spriteGo )
+    go.body = new Body( go, bodyDef, fixDef, mesh.position  ) 
+    Gos.push( go )
+    return go
 
 init = () ->
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
-    # camera.position.x = 2000
-    # camera.position.y = 2000
-    camera.position.z = 4000
+    camera = new THREE.OrthographicCamera(-400, 400, 400, -400, 1, 100 )
+    camera.position.z = 40 
 
     scene = new THREE.Scene()
 
-
-    # planeW = 100
-    # planeH = 100
-    # plane = new THREE.Mesh( new THREE.PlaneGeometry( planeW* 100, planeH* 100, planeW, planeH ), new   THREE.MeshBasicMaterial( { color: 0xaaaaaa, wireframe: true } ) )
-    # plane.rotation.x = Math.PI/2
-    # scene.add(plane)
-
-    scene.add( new  THREE.AxisHelper( 100 ) )
-
-
-    window.physicsScaleY = physicsScaleY
-    gui.add(this, 'physicsScaleY', -10, 10);
-
-
-    geometry = new THREE.CubeGeometry( 200, 200, 200 )
-    material = new THREE.MeshBasicMaterial( { color: 0x777722, wireframe: false } )
-    material.uvScale = [1, 1]
-
-    
-    for i in [0...num_meshes]
-        # Gos[i] = new Go
-        mesh = new THREE.Mesh( geometry, material ) 
-        mesh.position.x = ( i - num_meshes / 2.0 ) * 300
-        mesh.position.y = 0
-        mesh.position.z = 0
-        scene.add( mesh )
-
-
-    groundGeom = new THREE.CubeGeometry( 20 * physicsScaleX, 0.5 * physicsScaleY, 0.5 * 20 * physicsScaleX )
-    mesh = new THREE.Mesh( groundGeom, material ) 
-    mesh.position.x = 0
-    mesh.position.y = -10 * physicsScaleY
-    mesh.position.z = 0
-    scene.add( mesh )
-
-    tween = new TWEEN.Tween( { scale: 1 } ).to( { scale: 0.01 }, 5000 ).delay( 0 ).repeat(Infinity).onUpdate( -> 
-            mesh.scale.set( @scale, @scale, @scale ) )
-    tween2 = new TWEEN.Tween( { scale: 0.01 } ).to( { scale: 1 }, 500 ).delay( 0 ).onUpdate( -> 
-            mesh.scale.set( @scale, @scale, @scale ) )
-    # tween.chain(tween2)
-    tween2.chain(tween)
-    tween.start()
-    # tween2.start()
-
-
-    # if Detector.webgl
-    renderer = new THREE.WebGLRenderer( {antialias: true } )
-    # else
-    # renderer = new THREE.CanvasRenderer()
+    renderer = new THREE.WebGLRenderer( {antialias: false} )
     renderer.setSize( window.innerWidth, window.innerHeight )
-
-    tween = new TWEEN.Tween( { meshes: 1 } ).to( { meshes: 9 }, 1000 ).repeat( Infinity ).onUpdate( ->
-        num_meshes = Math.floor( @.meshes ) )
-    tween.start()
 
     document.body.appendChild( renderer.domElement )
     initialised = true
 
-    createMan(0, 0)
-    createHouse(Math.random() % 40 - 20, -20)
 
-    for go in Gos
-        console.log( go )
 
 pause = false
 window.togglePause = () ->
     pause = !pause
+    save()
+Mousetrap.bind( "p", window.togglePause, 'keydown' )
 
 onWindowResize = () ->
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
 window.addEventListener( 'resize', onWindowResize, false );
+
+
+save = () ->
+    objects = {}
+    for go in Gos
+        object = { prefab: go.prefab }
+        for own key, value of go
+            if value.toJSON? 
+                object += value.toJSON()
+        objects += object
+    localStorage.setItem( "objects", JSON.stringify( Gos ) )                
+    localStorage.setItem( "pause", pause )
+    console.log( JSON.stringify( Gos ) )
+
+logSave = () ->
+    console.log( localStorage.getItem( "objects" ) )
+Mousetrap.bind( "l", logSave, 'keydown' )
+
+removeSave = () ->
+    localStorage.removeItem( "objects" )
+    localStorage.removeItem( "pause" )
 
 previousTime = 0
 animStep = (t) ->
@@ -340,32 +338,43 @@ animStep = (t) ->
 
 serialiseTimer = 0
 animate = (time) ->
-    ## Physics
+    stats.begin()
+
     if !pause
         world.Step(time, 10, 10);
         world.ClearForces();
         TWEEN.update()
-
+        removeSave()
 
     for go in Gos
         for own key, value of go
             if value.update? 
                 value.update()
-    objects = {}
-    serialiseTimer += time
-    if serialiseTimer > 3.0
-        serialiseTimer = 0
-        for go in Gos
-            object = { prefab: go.prefab }
-            for own key, value of go
-                if value.toJSON? 
-                    object += value.toJSON()
-            objects += object
-        console.log( JSON.stringify( objects ) ) 
-        JSON.stringify( Gos )                
 
     renderer.render( scene, camera )
 
-if !initialised
-    init()
+    stats.end()
+
+
+init()
+
+pause = localStorage.getItem( "pause" )
+objStore = localStorage.getItem( "objects" )
+if pause && objStore?
+    console.log( "Loading save..." )
+    objects = JSON.parse( objStore )
+    for object in objects 
+        prefab = object.prefab
+        go = undefined
+        if prefab == "Man"
+            go = createMan(0, 0)
+        else
+            go = createHouse(0, -10)
+        for own key, value of object
+           if go[key] and go[key].parse?
+                go[key].parse( value )
+else
+    createMan(0, 10)
+    createHouse(0, -10)
+
 animStep(0)
