@@ -152,10 +152,6 @@ before layers configuration."
    dotspacemacs-default-package-repository nil
    )
   ;; User initialization goes here
-  (desktop-save-mode 1)
-  (setq-default tab-width 4 indent-tabs-mode nil)
-  (setq-default c-basic-offset 4)
-  (setq-default c-default-style "stroustrup")
   )
 
 (defun dotspacemacs/config ()
@@ -169,8 +165,12 @@ layers configuration."
   (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
   (setq rainbow-identifiers-cie-l*a*b*-saturation 50)
   (push '(tango . (50 50)) colors-theme-identifiers-sat&light)
-  (global-hl-line-mode -1)
+  (global-hl-line-mode 1)
   (define-key helm-map (kbd "C-d") 'helm-buffer-run-kill-buffers)
+  (desktop-save-mode 1)
+  (setq-default tab-width 4 indent-tabs-mode nil)
+  (setq c-default-style "bsd")
+  (setq c-basic-offset 4)
 )
 
 ;; Provide urls for repositories, having trouble connecting to them automatically
