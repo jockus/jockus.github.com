@@ -14,7 +14,7 @@
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
-     ;; ----------------------------------------------------------------
+     ;; -------------------------dostaco---------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
@@ -25,7 +25,6 @@
      csharp
      (colors
       :variables colors-enable-rainbow-identifiers t)
-     company-mode
      emacs-lisp
      erc
      eyebrowse
@@ -34,7 +33,6 @@
      org
      perforce
      shell
-     spacemacs-theme
      syntax-checking
      )
    ;; List of additional packages that will be installed wihout being
@@ -91,7 +89,7 @@ before layers configuration."
    ;; Major mode leader key is a shortcut key which is the equivalent of
    ;; pressing `<leader> m`. Set it to `nil` to disable it.
    ;; default: ","
-   dotspacemacs-major-mode-leader-key 'nil
+   dotspacemacs-major-mode-leader-key ","
    ;; Major mode leader key accessible in `emacs state' and `insert state'
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
    ;; The command key used for Evil commands (ex-commands) and
@@ -123,7 +121,6 @@ before layers configuration."
    ;; (Emacs 24.4+ only)
    dotspacemacs-maximized-at-startup t
    ;; A value from the range (0..100), in increasing opacity, which describes
-   
    ;; Transparency can be toggled through `toggle-transparency'.
    dotspacemacs-active-transparency 90
    ;; A value from the range (0..100), in increasing opacity, which describes
@@ -145,7 +142,7 @@ before layers configuration."
    dotspacemacs-persistent-server nil
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '( "pt" "ag" "ack" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now.
@@ -166,7 +163,6 @@ layers configuration."
   (setq rainbow-identifiers-cie-l*a*b*-saturation 50)
   (push '(tango . (50 50)) colors-theme-identifiers-sat&light)
   (global-hl-line-mode 1)
-  (define-key helm-map (kbd "C-d") 'helm-buffer-run-kill-buffers)
   (desktop-save-mode 1)
   (setq-default tab-width 4 indent-tabs-mode nil)
   (setq c-default-style "bsd")
@@ -233,7 +229,7 @@ layers configuration."
  '(magit-use-overlays nil)
  '(package-selected-packages
    (quote
-    (toc-org pcre2el mmm-mode spinner spacemacs-theme helm-core rainbow-mode rainbow-identifiers erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks omnisharp csharp-mode p4 eyebrowse shell-pop org-repo-todo org-present org-pomodoro org-bullets multi-term markdown-toc magit-svn magit-gitflow magit-gh-pulls macrostep htmlize helm-gitignore helm-flyspell helm-c-yasnippet github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe gist flycheck-pos-tip evil-org elisp-slime-nav company-statistics company-quickhelp company-c-headers cmake-mode clang-format auto-yasnippet ac-ispell auto-complete company flycheck git-gutter yasnippet gitignore-mode gh logito pcache magit git-rebase-mode git-commit-mode markdown-mode alert log4e gntp window-numbering volatile-highlights vi-tilde-fringe smooth-scrolling rfringe rainbow-delimiters powerline popup paradox page-break-lines open-junk-file neotree move-text linum-relative leuven-theme info+ indent-guide ido-vertical-mode hungry-delete hl-anything highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-descbinds helm-ag guide-key-tip google-translate golden-ratio gh-md fringe-helper flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-terminal-cursor-changer evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-jumper evil-indent-textobject evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu clean-aindent-mode buffer-move auto-highlight-symbol auto-dictionary aggressive-indent adaptive-wrap ace-window ace-link ace-jump-mode avy names anzu iedit smartparens highlight flx pos-tip guide-key s popwin projectile helm async parent-mode pkg-info epl evil-leader evil use-package bind-key dash)))
+    (spray gnuplot eshell-prompt-extras esh-help disaster define-word which-key quelpa package-build dash eyebrowse persp-projectile toc-org pcre2el mmm-mode spinner spacemacs-theme helm-core rainbow-mode rainbow-identifiers erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks omnisharp csharp-mode p4 shell-pop org-repo-todo org-present org-pomodoro org-bullets multi-term markdown-toc magit-svn magit-gitflow magit-gh-pulls macrostep htmlize helm-gitignore helm-flyspell helm-c-yasnippet github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe gist flycheck-pos-tip evil-org elisp-slime-nav company-statistics company-quickhelp company-c-headers cmake-mode clang-format auto-yasnippet ac-ispell auto-complete company flycheck git-gutter yasnippet gitignore-mode gh logito pcache magit git-rebase-mode git-commit-mode markdown-mode alert log4e gntp window-numbering volatile-highlights vi-tilde-fringe smooth-scrolling rfringe rainbow-delimiters powerline popup paradox page-break-lines open-junk-file neotree move-text linum-relative leuven-theme info+ indent-guide ido-vertical-mode hungry-delete hl-anything highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-descbinds helm-ag guide-key-tip google-translate golden-ratio gh-md fringe-helper flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-terminal-cursor-changer evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-jumper evil-indent-textobject evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu clean-aindent-mode buffer-move auto-highlight-symbol auto-dictionary aggressive-indent adaptive-wrap ace-window ace-link ace-jump-mode avy names anzu iedit smartparens highlight flx pos-tip guide-key s popwin projectile helm async parent-mode pkg-info epl evil-leader evil use-package bind-key)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(rainbow-identifiers-cie-l*a*b*-saturation 50)

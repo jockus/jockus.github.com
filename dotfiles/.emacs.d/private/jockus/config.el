@@ -8,3 +8,8 @@
   (evil-open-below 1)
   (insert "** ")
   (evil-insert 1))
+
+
+(defun filter-directories (file-function &rest args)
+  (--map (file-name-nondirectory it) (apply file-function args)))
+
