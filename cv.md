@@ -6,10 +6,5 @@ comments: false
 
 # CV/Resume
 
-Here you can download my CV in:
+Availabe on request at joakim.hentula[at] gmail.com
 
-[Word-format](/cv/cvjoakimhentula.docx)
-
-or
-
-[PDF-format](/cv/cvjoakimhentula.pdf)

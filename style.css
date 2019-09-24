@@ -251,8 +251,8 @@ big {
   font-size: 1.3em;
 }
 .wp_syntax {
-  color: #100;
-  background-color: #f9f9f9;
+  color: #002b36;
+  background-color: #fdf6e3;
   border: 1px solid silver;
   margin: 0 0 1.5em 0;
   overflow: auto;
@@ -322,20 +322,19 @@ img.avatar.photo.grav-clone, img.avatar.photo.grav-clone:hover {
   border-width: 1px !important;
 }
 body {
-  background-color: #ffffff;
-  color: #444444;
+  background-color: #fdf6e3;
+  color: #002b36;
 }
 div#sidebar {
-  background-color: #ffffff;
-  /* box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px;
-  -moz-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px;
-  -webkit-box-shadow: inset rgba(0, 0, 0, 0.1) 0px 0px 5px; */
+  background-color: #fdf6e3;
+  color: #2aa198;
 }
 div#sidebar h1, div#sidebar h1 a {
-  color: #8d8d8d;
+  color: #2aa198;
 }
 div#content {
   background-color: transparent;
+  color: #002b36;
 }
 div#content .header {
   border-bottom: solid 1px rgba(0, 0, 0, 0.1);
@@ -349,15 +348,14 @@ h3,
 h4,
 h5,
 h6 {
-  color: #000000;
+  color: #586e75;
 }
 a, a:visited {
-  color: #47afd5;
-  /* color: #d38533; */
+  color: #2aa198;
 }
 div.article-text b, div.article-text strong, div.article-text th {
   font-weight: normal;
-  color: #222222;
+  color: #47afd5;
 }
 div.article-text h1,
 div.article-text h2,
@@ -367,11 +365,10 @@ div.article-text h5,
 div.article-text h6,
 div.article-text big {
   font-weight: normal;
-  color: #222222;
 }
 a.author-login, a.author-login:visited {
   font-size: 0.8em;
-  color: #47afd5;
+  color: #586e75;
 }
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -476,7 +473,6 @@ div.post-excerpt div.author .avatar {
   min-height: 128px;
 }
 div.post-excerpt div.author div.date {
-  background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/date.png) no-repeat left center;
   padding-left: 24px;
   padding-right: 10px;
 }
@@ -494,7 +490,7 @@ div.post-full ul {
 }
 .button a {
   background: #f7f7f7;
-  color: #888888;
+  color: #586e75;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -564,13 +560,11 @@ div.post-full ul.button-list {
   -o-transition: 0.1s ease-in;
   transition: 0.1s ease-in;
   text-shadow: 1px 1px #f7f7f7;
-  /* background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led-off.png) no-repeat right center; */
   padding-right: 20px;
 }
 .nav a:hover {
   color: #000;
   text-decoration: none;
-  /* background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led.png) no-repeat right center; */
   -webkit-transition: 0.1s ease-in;
   -moz-transition: 0.1s ease-in;
   -o-transition: 0.1s ease-in;
@@ -578,7 +572,6 @@ div.post-full ul.button-list {
 }
 .nav .current a {
   color: #5a5a5a;
-  /* background: url(http://altdevblogaday.com/wp-content/themes/macton-isabella/css/images/led.png) no-repeat right center; */
   padding-right: 20px;
 }
 div.page-authors div.author {
