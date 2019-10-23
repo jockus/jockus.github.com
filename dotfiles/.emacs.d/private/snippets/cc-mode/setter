@@ -1,9 +1,0 @@
-
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: setget 
-# key: setget
-# binding: direct-keybinding
-# --
-void set${1:Name}( ${2:Type} value ) { m_${1:$(s-lower-camel-case yas-text)} = value; }
-$2 get$1() const { return m_${1:$(s-lower-camel-case yas-text)}; }
-$0
